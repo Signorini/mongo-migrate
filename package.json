@@ -1,15 +1,15 @@
 {
-  "name": "mongodb-migrate",
+  "name": "mongodb-migrate-maestroserver",
   "version": "2.0.2",
-  "description": "Migration framework for mongo in node",
+  "description": "Migration framework for mongo in node - Forked and maintan for Maestro Server",
   "keywords": [
     "mongo",
     "migrate",
     "migrations"
   ],
   "author": {
-    "name": "Austin Floyd",
-    "email": "texsc98@gmail.com"
+    "name": "Felipe Signorini",
+    "email": "felipeklerk@yahoo.com.br"
   },
   "repository": {
     "type": "git",
