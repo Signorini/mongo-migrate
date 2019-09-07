@@ -2,15 +2,17 @@
 #### NPM: mongodb-migrate-maestroserver
 =============
 
-Built starting with a framework from: https://github.com/visionmedia/node-migrate
+Forked framework from: https://github.com/afloyd/mongo-migrate, bump mongodb version and update lib dependecies.
 
+- Now, only support connection string
+- Can use mongo:// or mongodb+srv:// protocol
 
 ## Installation
-	$ npm install mongodb-migrate
+	$ npm install mongodb-migrate-maestroserver
 
 ## Usage
 ```
-Usage: node mongodb-migrate [options] [command]
+Usage: node mongodb-migrate-maestroserver[options] [command]
 
 Options:
 	-runmm, --runMongoMigrate		Run the migration from the command line
@@ -21,11 +23,8 @@ Options:
 	-dbn, --dbPropName <string>	Property name for the database connection in the config file. The configuration file should
 									contain something like
 										{
-											appDb : { //appDb would be the dbPropName
-												host: 'localhost',
-												database: 'mydbname',
-												//port: '27017' //include a port if necessary
-											}
+											"connectionString": "mongodb+srv://user:password@mongo1.host.com:27018",
+                                            "database": database,
 										}
 
 Commands:
@@ -35,10 +34,10 @@ Commands:
 ```
 
 ## Command-line usage
-NPM will install `mongodb-migrate` into a `node_modules` folder within the directory it is run. To use `mongodb-migrate` from the command line, you must always specify the relative path from your current directory to the `mongodb-migrate` directory for `node` to be able to find it. Such as: `node ./node_modules/mongodb-migrate -runmm create` (shown in examples below), or on *nix machines `node ./node_modules/mongodb-migrate -runmm create`.
+NPM will install `mongodb-migrate-maestroserver` into a `node_modules` folder within the directory it is run. To use `mongodb-migrate-maestroserver` from the command line, you must always specify the relative path from your current directory to the `mongodb-migrate-maestroserver` directory for `node` to be able to find it. Such as: `node ./node_modules/mongodb-migrate-maestroserver -runmm create` (shown in examples below), or on *nix machines `node ./node_modules/mongodb-migrate-maestroserver -runmm create`.
 
 ## Creating Migrations
-To create a migration execute with `node ./node_modules/mongodb-migrate -runmm create` and optionally a title. mongodb-migrate will create a node module within `./migrations/` which contains the following two exports:
+To create a migration execute with `node ./node_modules/mongodb-migrate-maestroserver-runmm create` and optionally a title. mongodb-migrate-maestroserverwill create a node module within `./migrations/` which contains the following two exports:
 ```
 var mongodb = require('mongodb');
 
@@ -56,20 +55,20 @@ All you have to do is populate these, invoking `next()` when complete, and you a
 For example:
 
 ```
-	$ node ./node_modules/mongodb-migrate -runmm create add-pets
-	$ node ./node_modules/mongodb-migrate -runmm create add-owners
+	$ node ./node_modules/mongodb-migrate-maestroserver -runmm create add-pets
+	$ node ./node_modules/mongodb-migrate-maestroserver -runmm create add-owners
 ```
 
 The first call creates `./migrations/0005-add-pets.js`, which we can populate:
 ```
 exports.up = function (db, next) {
 	var pets = db.Collection('pets');
-	pets.insert({name: 'tobi'}, next);
+	pets.insertOne({name: 'tobi'}, next);
 };
 
 exports.down = function (db, next) {
 	var pets = db.Collection('pets');
-	pets.findAndModify({name: 'tobi'}, [], {}, { remove: true }, next);
+	pets.findOneAndDelete({name: 'tobi'}, next);
 };
 ```
 
@@ -77,22 +76,20 @@ The second creates `./migrations/0010-add-owners.js`, which we can populate:
 ```
 	exports.up = function(db, next){
 		var owners = db.Collection('owners');
-		owners.insert({name: 'taylor'}, next);
+		owners.insertOne({name: 'taylor'}, next);
     };
 
 	exports.down = function(db, next){
 		var owners = db.Collection('owners');
-		owners.findAndModify({name: 'taylor'}, [], {}, { remove: true }, next);
+		owners.findOneAndDelete({name: 'taylor'}, next);
 	};
 ```
-
-Note, for mongodb 2.x you need to use `db.collection('<collection-name>')` instead of `mongodb.Collection(db, '<collection-name>')`.
 
 ## Running Migrations
 When first running the migrations, all will be executed in sequence.
 
 ```
-	node ./node_modules/mongodb-migrate -runmm
+	node ./node_modules/mongodb-migrate-maestroserver-runmm
 	up : migrations/0005-add-pets.js
 	up : migrations/0010-add-owners.js
 	migration : complete
@@ -100,19 +97,19 @@ When first running the migrations, all will be executed in sequence.
 
 Subsequent attempts will simply output "complete", as they have already been executed on the given database. `mongodb-migrate` knows this because it stores migrations already run against the database in the `migrations` collection.
 ```
-	$ node mongodb-migrate -runmm
+	$ node mongodb-migrate-maestroserver-runmm
 	migration : complete
 ```
 
-If we were to create another migration using `node ./node_modules/mongodb-migrate -runmm create coolest-owner`, and then execute migrations again, we would execute only those not previously executed:
+If we were to create another migration using `node ./node_modules/mongodb-migrate-maestroserver-runmm create coolest-owner`, and then execute migrations again, we would execute only those not previously executed:
 ```
-	$ node ./node_modules/mongodb-migrate -runmm
+	$ node ./node_modules/mongodb-migrate-maestroserver-runmm
 	up : migrations/0015-coolest-owner
 ```
 
-If we were to then migrate using `node ./node_modules/mongodb-migrate -runmm down 5`. This means to run from current revision, which in this case would be `0015-coolecst-owner`, down to revision number 5. Note that you can use either the revision number, or then full revision name `0005-add-pets`
+If we were to then migrate using `node ./node_modules/mongodb-migrate-maestroserver-runmm down 5`. This means to run from current revision, which in this case would be `0015-coolecst-owner`, down to revision number 5. Note that you can use either the revision number, or then full revision name `0005-add-pets`
 ```
-	$ node ./node_modules/mongodb-migrate -runmm down 5
+	$ node ./node_modules/mongodb-migrate-maestroserver-runmm down 5
 	down : migrations/0015-coolest-owner
 	down : migrations/0010-add-owners
 ```
@@ -121,78 +118,62 @@ If we were to then migrate using `node ./node_modules/mongodb-migrate -runmm dow
 ### JSON String
 This option allows you to pass in the database configuration on the command line, eliminating the need to store settings in a config file. The argument should be wrapped in single quotes, and all keys and string values must be in double quotes. Using this option overrides any of the other config options described below. The "port", "username", and "password" properties are optional.
 ```
-$ node ./node_modules/mongodb-migrate -runmm -dbc '{ "host":"localhost","db":"mydbname","port":27017,"username":"myuser","password":"mypwd"}' up
+$ node ./node_modules/mongodb-migrate-maestroserver-runmm -dbc '{ "host":"localhost","db":"mydbname","port":27017,"username":"myuser","password":"mypwd"}' up
 migration : complete
 ```
 ### Working Directory
 The options for connecting to the database are read in from a file. You can configure where the file is read in from and where the migration directory root is by the `-c <path>` option.
 ```
-	$ node ./node_modules/mongodb-migrate -runmm -c ../.. up
+	$ node ./node_modules/mongodb-migrate-maestroserver-runmm -c ../.. up
 	migration : complete
 ```
-This would set the working directory two levels above the mongodb-migrate directory, such as if you included it into another project and it was nested in the node_modules folder.
+This would set the working directory two levels above the mongodb-migrate-maestroserverdirectory, such as if you included it into another project and it was nested in the node_modules folder.
 
 ### Config filename
 The default configuration filename is `default-config.json`. If you wish to use a different filename, use the `-cfg <filename>` option:
 ```
-	$ node ./node_modules/mongodb-migrate -runmm -cfg my-config.json up
+	$ node ./node_modules/mongodb-migrate-maestroserver-runmm -cfg my-config.json up
 	migration : complete
 ```
 
 ### Config file property name
-Inside the configuration file, mongodb-migrate expects the database connection information to be nested inside an object. The default object name is `mongoAppDb`. If you wish to change this you can use the `-dbn <string>` option:
+Inside the configuration file, mongodb-migrate-maestroserverexpects the database connection information to be nested inside an object. The default object name is `mongoAppDb`. If you wish to change this you can use the `-dbn <string>` option:
 ```
-	$ node ./node_modules/mongodb-migrate -runmm -dbn dbSettings up
+	$ node ./node_modules/mongodb-migrate-maestroserver-runmm -dbn dbSettings up
 	migration : complete
 ```
-This would tell mongodb-migrate your config file looks something like:
+
+Use `connectionString` property:
 ```
 	{
-		"dbSettings": {
-			"host": "localhost",
-			"db": "myDatabaseName",
-			//"port": 27017 //Specifying a port is optional
+		"mongoAppDb": {
+			"connectionString": "mongodb+srv://user:password@mongo1.host.com:27018",
+            "database": database,
 		}
 	}
 ```
-To connect to a replica set, use  the `replicaSet` property:
+
+Can set mongo client options.
 ```
-	{
-		"dbSettings": {
-			"replicaSet" : ["localhost:27017","localhost:27018","localhost:27019"],
-			"db": "myDatabaseName",
-		}
-	}
+"mongoAppDb": {
+    "connectionString": "mongodb://user:password@mongo1.host.com:27018",
+    "database": database,
+    "strOpts":
+    {
+        useUnifiedTopology: true,
+        useNewUrlParser: true
+    }
+}
 ```
-or use `connectionString` property:
-```
-	{
-		"dbSettings": {
-			"connectionString": "mongodb://user:password@mongo1.host.com:27018,mongo2.host.com:27018,mongo-arbiter.host.com:27018/?w=majority&amp;wtimeoutMS=10000&amp;journal=true"
-		}
-	}
-```
-`connectionString` has priority over the other properties
 
 All of these settings can be combined as desired, except for the up/down obviously ;)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # Licence
 
 (The MIT License)
 
+Copyright &copy; 2019 Felipe Signorini
 Copyright &copy; 2017 Austin Floyd
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -213,5 +194,3 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
