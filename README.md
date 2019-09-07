@@ -1,5 +1,5 @@
 # mongo-migrate
-#### NPM: mongodb-migrate
+#### NPM: mongodb-migrate-maestroserver
 =============
 
 Built starting with a framework from: https://github.com/visionmedia/node-migrate
@@ -23,7 +23,7 @@ Options:
 										{
 											appDb : { //appDb would be the dbPropName
 												host: 'localhost',
-												db: 'mydbname',
+												database: 'mydbname',
 												//port: '27017' //include a port if necessary
 											}
 										}

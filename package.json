@@ -1,7 +1,7 @@
 {
   "name": "mongodb-migrate-maestroserver",
   "version": "2.0.2",
-  "description": "Migration framework for mongo in node - Forked and maintan for Maestro Server",
+  "description": "Migration framework for mongo in node - Forked and maintain for Maestro Server",
   "keywords": [
     "mongo",
     "migrate",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/afloyd/mongo-migrate"
+    "url": "git://github.com/signorini/mongo-migrate"
   },
   "dependencies": {
     "mongodb": "^3.3.2",
