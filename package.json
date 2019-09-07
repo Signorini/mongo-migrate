@@ -1,6 +1,6 @@
 {
   "name": "mongodb-migrate-maestroserver",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Migration framework for mongo in node - Forked and maintain for Maestro Server",
   "keywords": [
     "mongo",
