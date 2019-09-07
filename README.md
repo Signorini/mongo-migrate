@@ -1,8 +1,7 @@
-# mongo-migrate
+# mongo-migrate-maestroserver
 #### NPM: mongodb-migrate-maestroserver
-=============
 
-Forked framework from: https://github.com/afloyd/mongo-migrate, bump mongodb version and update lib dependecies.
+Forked framework from: https://github.com/afloyd/mongo-migrate, bumped mongodb version to >3.
 
 - Now, only support connection string
 - Can use mongo:// or mongodb+srv:// protocol
@@ -20,12 +19,11 @@ Options:
 	-dbc, --dbConfig            	Valid JSON string containing db settings (overrides -c, -cfg, & -dbn), like this:
 										-dbc='{ "host": "localhost", "db": "mydbname", "port": 27017, "username": "myuser", "password": "mypwd"}'
 	-cfg, --config <filename>		DB config file name
-	-dbn, --dbPropName <string>	Property name for the database connection in the config file. The configuration file should
-									contain something like
-										{
-											"connectionString": "mongodb+srv://user:password@mongo1.host.com:27018",
-                                            "database": database,
-										}
+	-dbn, --dbPropName <string>	Property name for the database connection in the config file. The configuration file should contain something like
+    {
+        "connectionString": "mongodb+srv://user:password@mongo1.host.com:27018",
+        "database": database,
+    }
 
 Commands:
 	down [revision]		migrate down (stop at optional revision name/number)
